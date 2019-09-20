@@ -1,7 +1,7 @@
 # Source: https://www.reddit.com/r/redditdev/comments/8s5iek/is_it_possible_to_stream_every_comment_on_reddit/e0wsyih
-def stream_all_comments(reddit):
+def stream_all_comments(reddit, subreddit='all'):
     print('Get Latest Comment')
-    start_id = reddit.subreddit('all').comments().__next__().id
+    start_id = reddit.subreddit(subreddit).comments().__next__().id
 
     start_index = int(start_id, 36)
     while(True):
