@@ -23,32 +23,49 @@ class LRU(OrderedDict):
             oldest = next(iter(self))
             del self[oldest]
 
+def save_comments(comments, path):
+    with open(path, 'wb') as f:
+        pickle.dump(comments, f)
+
+def load_comments(path, **kwargs):
+    try:
+        with open(path, 'rb') as f:
+            comments = pickle.load(f)
+    except FileNotFoundError:
+        comments = LRU(**kwargs)
+    return comments
+
+COMMENTS_SAVE_PATH = 'comments.pkl'
 
 if __name__== '__main__':
-    comments = LRU(maxsize=2000000)  # 1 million entries
+    comments = load_comments(path=COMMENTS_SAVE_PATH, maxsize=2000000)  # 2 million entries
     r_autobestof = reddit.subreddit('autobestof')
-    for comment in stream.stream_all_comments(reddit):
-        # stream all comments for instances of thanks
-        body = comment.body.lower()
-        if ('thank you' in body) \
-            and comment.parent_id.startswith('t1_'):
-            # record their parent_ids
-            try:
-                comments[comment.parent_id] += 1
-                if comments[comment.parent_id] == 4:
-                    print(comment.body)
-                    # when a parent_id hits X then post it to r/autobestof
-                    # (make sure parent_ids that were already posted don't get posted again)
-                    parent_id = comment.parent_id.split('_')[1]
-                    parent_comment = reddit.comment(parent_id)
-                    if math.log(len(parent_comment.body)) > 3:
-                        # check log(length) of parent_id post
-                        r_autobestof.submit(
-                            title=parent_comment.submission.title,
-                            url='www.reddit.com' + parent_comment.permalink + '?context=1000')
-                        print(parent_comment.permalink)
-                        print(parent_comment.body)
-            except KeyError:
-                print(comment.parent_id)
-                comments[comment.parent_id] = 1
-        # remove old parent_ids (already handled by LRU)
+    try:
+        for comment in stream.stream_all_comments(reddit):
+            # stream all comments for instances of thanks
+            body = comment.body.lower()
+            if ('thank you' in body) \
+                and comment.parent_id.startswith('t1_'):
+                # record their parent_ids
+                try:
+                    comments[comment.parent_id] += 1
+                    if comments[comment.parent_id] == 4:
+                        print(comment.body)
+                        # when a parent_id hits X then post it to r/autobestof
+                        # (make sure parent_ids that were already posted don't get posted again)
+                        parent_id = comment.parent_id.split('_')[1]
+                        parent_comment = reddit.comment(parent_id)
+                        if math.log(len(parent_comment.body)) > 3:
+                            # check log(length) of parent_id post
+                            r_autobestof.submit(
+                                title=parent_comment.submission.title,
+                                url='www.reddit.com' + parent_comment.permalink + '?context=1000')
+                            print(parent_comment.permalink)
+                            print(parent_comment.body)
+                except KeyError:
+                    print(comment.parent_id)
+                    comments[comment.parent_id] = 1
+            # remove old parent_ids (already handled by LRU)
+    except:
+        save_comments(comments, path=COMMENTS_SAVE_PATH)
+        raise

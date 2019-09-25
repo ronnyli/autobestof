@@ -7,13 +7,11 @@ def stream_all_comments(reddit, subreddit='all'):
     while(True):
         comments = reddit.info(list(map(lambda num: "t1_{0}".format(to_base(num, 36)), range(start_index, start_index+100))))
         newest_id = 0
-        counter = 0
         for comment in comments:
             comment_id = int(comment.id, 36)
             if(newest_id < comment_id):
                 newest_id = comment_id
                 if(comment.author!=None):
-                    counter+=1
                     yield comment
         start_index = newest_id
 
