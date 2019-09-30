@@ -3,3 +3,4 @@ praw==6.3.1
 psaw==0.0.7
 prawcore==1.0.1
 scikit-learn==0.21.2
+tensorflow-gpu==1.14.0
