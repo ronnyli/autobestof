@@ -10,11 +10,11 @@ class Gpt2Generator(object):
         self.max_tokens = max_tokens
         self.kwargs = kwargs
 
-    def get_encoder():
+    def get_encoder(self):
         encoder = gpt2.src.encoder.get_encoder(os.path.join(MODEL_DIR, MODEL_NAME))
         self.encoder = encoder
 
-    def load_gpt2():
+    def load_gpt2(self):
         sess = gpt2.start_tf_sess()
         gpt2.load_gpt2(sess, checkpoint_dir=MODEL_DIR, run_name=MODEL_NAME)
         self.sess = sess
