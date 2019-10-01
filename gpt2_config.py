@@ -44,4 +44,6 @@ class Gpt2Generator(object):
             run_name=MODEL_NAME
         )
         titles = [title.split(maxsplit=1)[1] for title in titles]
+        # Escape user mentions to prevent spamming them
+        titles = [title.replace('u/', '/u/' for title in titles)]
         return titles
