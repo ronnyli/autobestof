@@ -67,5 +67,5 @@ if __name__== '__main__':
             title_matches = [curr_title in existing_title for existing_title in wp_posts]
             if not any(title_matches): print(write_wordpress_post(comment))
             # GPT2 Titles
-            generated_text = ['Auto-generated titles for this post (Work-in-Progress)'] + gpt2.generate_titles(comment)
+            generated_text = ['Auto-generated titles for this post (Work-in-Progress)\n'] + gpt2.generate_titles(comment)
             submission.reply('\n'.join(generated_text))
