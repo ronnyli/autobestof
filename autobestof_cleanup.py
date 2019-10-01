@@ -35,7 +35,7 @@ if __name__== '__main__':
     for submission in r_autobestof.stream.submissions():
         comments = submission.comments.list()
         if len(comments) > 0:
-            comment_from_me = [c.auhor.name == 'sirius_li' for c in comments]
+            comment_from_me = [c.author.name == 'sirius_li' for c in comments]
             if any(comment_from_me):
                 # autobestof_cleanup already ran on this submission
                 continue
