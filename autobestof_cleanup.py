@@ -45,7 +45,13 @@ if __name__== '__main__':
         comment = reddit.comment(comment_id)
         # Replies don't appear unless you refresh
         # https://github.com/praw-dev/praw/issues/413#issuecomment-133202208
-        comment.refresh()
+        try:
+            comment.refresh()
+        except:
+            # something happened to the comment to make it inaccessible
+            # i.e., subreddit quarantined, set to private, etc
+            submission.delete()
+            continue
         authors = {}
         for reply in comment.replies:
             # direct replies only
