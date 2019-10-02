@@ -1,4 +1,4 @@
-from gpt_2_simple.src import encoder
+from gpt2_config import Gpt2Generator
 
 import json
 import re
@@ -16,13 +16,12 @@ def restrict_length(txt, n_tokens=900):
 for line in sys.stdin:
     # dict_keys(['bestof_created_utc', 'input', 'target'])
     rbestof = json.loads(line)
-    target_id = rbestof['target'].split()[0]
+    target_id, target = rbestof['target'].split(maxsplit=1)
     comment_txt = find_comment(target_id, rbestof['input'])
     comment_txt = restrict_length(comment_txt)
     if len(comment_txt) == 0 or len(rbestof['target']) == 0: continue
     print('<|startoftext|>')
-    print(target_id)
     print(comment_txt)
     print('<|rbestof|>')
-    print(rbestof['target'])
+    print(target)
     print('<|endoftext|>')
