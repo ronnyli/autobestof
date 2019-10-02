@@ -15,6 +15,9 @@ def find_comment(target_id, txt):
 def restrict_length(all_txt, max_tokens=1023, output_len=30):
     '''Max length of document must be `max_tokens` long after the encoding step'''
     enc = gpt2.encoder
+    n_init = len(enc.encode('\n'.join(all_txt)))
+    if n_init < max_tokens:
+        return all_txt
     input_txt = all_txt.pop(1)
     output_txt = all_txt.pop(2)
     output_tokens = enc.encode(output_txt)[:output_len]
