@@ -34,7 +34,10 @@ def restrict_length(all_txt, max_tokens=1023, output_len=30):
 
 for line in sys.stdin:
     # dict_keys(['bestof_created_utc', 'input', 'target'])
-    rbestof = json.loads(line)
+    try:
+        rbestof = json.loads(line)
+    except json.decoder.JSONDecodeError:
+        continue
     target_id, target = rbestof['target'].split(maxsplit=1)
     comment_txt = find_comment(target_id, rbestof['input'])
     if len(comment_txt) == 0 or len(target) == 0: continue
