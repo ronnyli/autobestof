@@ -25,8 +25,8 @@ def restrict_length(all_txt, max_tokens=1023, output_len=30):
     n_input = max_tokens - n_output - n_misc
     assert n_input > 960, output_trunc + ' ' + misc_txt
     input_trunc = enc.decode(enc.encode(input_txt)[:n_input])
-    all_txt.insert(output_trunc, 2)
-    all_txt.insert(input_trunc, 1)
+    all_txt.insert(2, output_trunc)
+    all_txt.insert(1, input_trunc)
     return all_txt
 
 for line in sys.stdin:
