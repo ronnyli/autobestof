@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import math
 import pickle
+import time
 
 from reddit_auth import reddit
 import stream
@@ -63,8 +64,8 @@ if __name__== '__main__':
                             print(parent_comment.permalink)
                             print(parent_comment.body)
                 # remove old parent_ids (already handled by LRU)
-        # TODO: except HTTPError1: continue
-        # TODO: except HTTPError2: continue
+        # TODO: except HTTPError1: time.sleep(1200) continue
+        # TODO: except HTTPError2: time.sleep(1200) continue
         except:
             save_comments(comments, path=COMMENTS_SAVE_PATH)
             raise
