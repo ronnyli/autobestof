@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import math
 import pickle
+import time
 
 from reddit_auth import reddit
 import stream
@@ -38,18 +39,18 @@ def load_comments(path, **kwargs):
 COMMENTS_SAVE_PATH = 'comments.pkl'
 
 if __name__== '__main__':
-    comments = load_comments(path=COMMENTS_SAVE_PATH, maxsize=2000000)  # 2 million entries
+    comments = load_comments(path=COMMENTS_SAVE_PATH, maxsize=1000000)  # 1 million entries
     r_autobestof = reddit.subreddit('autobestof')
-    try:
-        for comment in stream.stream_all_comments(reddit):
-            # stream all comments for instances of thanks
-            body = comment.body.lower()
-            if ('thank you' in body) \
-                and comment.parent_id.startswith('t1_'):
-                # record their parent_ids
-                try:
-                    comments[comment.parent_id] += 1
-                    if comments[comment.parent_id] == 4:
+    while True:
+        try:
+            for comment in stream.stream_all_comments(reddit):
+                # stream all comments for instances of thanks
+                body = comment.body.lower()
+                if (('thank you' in body) or ('thanks for' in body)) \
+                    and comment.parent_id.startswith('t1_'):
+                    # record their parent_ids
+                    comments[comment.parent_id] = comments.get(comment.parent_id, 0) + 1
+                    if comments[comment.parent_id] == 6:
                         print(comment.body)
                         # when a parent_id hits X then post it to r/autobestof
                         # (make sure parent_ids that were already posted don't get posted again)
@@ -62,10 +63,9 @@ if __name__== '__main__':
                                 url='www.reddit.com' + parent_comment.permalink + '?context=1000')
                             print(parent_comment.permalink)
                             print(parent_comment.body)
-                except KeyError:
-                    print(comment.parent_id)
-                    comments[comment.parent_id] = 1
-            # remove old parent_ids (already handled by LRU)
-    except:
-        save_comments(comments, path=COMMENTS_SAVE_PATH)
-        raise
+                # remove old parent_ids (already handled by LRU)
+        # TODO: except HTTPError1: time.sleep(1200) continue
+        # TODO: except HTTPError2: time.sleep(1200) continue
+        except:
+            save_comments(comments, path=COMMENTS_SAVE_PATH)
+            raise
