@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import math
 import pickle
+import prawcore
 import time
 
 from reddit_auth import reddit
@@ -65,7 +66,10 @@ if __name__== '__main__':
                             print(parent_comment.body)
                 # remove old parent_ids (already handled by LRU)
         # TODO: except HTTPError1: time.sleep(1200) continue
-        # TODO: except HTTPError2: time.sleep(1200) continue
+        except prawcore.exceptions.RequestException as e:
+            print(e)
+            time.sleep(60)
+            continue
         except:
             save_comments(comments, path=COMMENTS_SAVE_PATH)
             raise
