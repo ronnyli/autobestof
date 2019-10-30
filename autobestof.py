@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import math
 import pickle
-import prawcore
+from prawcore.exceptions import RequestException, ServerError
 import time
 
 from reddit_auth import reddit
@@ -65,8 +65,7 @@ if __name__== '__main__':
                             print(parent_comment.permalink)
                             print(parent_comment.body)
                 # remove old parent_ids (already handled by LRU)
-        # TODO: except HTTPError1: time.sleep(1200) continue
-        except prawcore.exceptions.RequestException as e:
+        except (RequestException, ServerError) as e:
             print(e)
             time.sleep(60)
             continue
