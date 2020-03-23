@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import math
 import pickle
-from prawcore.exceptions import RequestException, ServerError
+from prawcore.exceptions import ResponseException, RequestException, ServerError
 import time
 
 from reddit_auth import reddit
@@ -47,11 +47,11 @@ if __name__== '__main__':
             for comment in stream.stream_all_comments(reddit):
                 # stream all comments for instances of thanks
                 body = comment.body.lower()
-                if (('thank you' in body) or ('thanks for' in body)) \
+                if ('thank you' in body) \
                     and comment.parent_id.startswith('t1_'):
                     # record their parent_ids
                     comments[comment.parent_id] = comments.get(comment.parent_id, 0) + 1
-                    if comments[comment.parent_id] == 6:
+                    if comments[comment.parent_id] == 4:
                         print(comment.body)
                         # when a parent_id hits X then post it to r/autobestof
                         # (make sure parent_ids that were already posted don't get posted again)
@@ -65,7 +65,7 @@ if __name__== '__main__':
                             print(parent_comment.permalink)
                             print(parent_comment.body)
                 # remove old parent_ids (already handled by LRU)
-        except (RequestException, ServerError) as e:
+        except (ResponseException, RequestException, ServerError) as e:
             print(e)
             time.sleep(60)
             continue

@@ -1,37 +1,8 @@
-from gpt2_config import Gpt2Generator
 from reddit_auth import reddit
-import wordpress
-
-
-def write_wordpress_post(comment):
-    title = comment.submission.title
-    try:
-        if comment.author:
-            author = 'u/' + comment.author.name
-        else:
-            author = '[deleted]'
-    except:
-        return 'No author found. Did not post'
-    url = 'https://www.reddit.com' + comment.permalink + '?context=1000'
-    wp_post = {}
-    wp_post['title'] = 'Reddit Gold: "'+title+'"'
-    opening_blurb = '<i>Reddit Gold</i> highlights the most useful and educational content ' + \
-        'on Reddit as found on <a href="https://www.reddit.com/r/AutoBestOf/">r/AutoBestOf</a>. ' + \
-        '\n\n' + \
-        'Today\'s post is from <strong>'+author+'</strong> who answers the question: "<i>'+title+'</i>"'
-    wp_post['content'] = opening_blurb + '\n' + \
-        '<blockquote cite="'+url+'">'+comment.body_html+'</blockquote>' + \
-        '<a href="'+url+'">Source</a>'
-    resp = wordpress.create_post(wp_post)
-    return resp.status_code
 
 
 if __name__== '__main__':
     r_autobestof = reddit.subreddit('autobestof')
-    wp_posts = [post['title']['rendered'] for post in wordpress.get_posts()]
-    gpt2 = Gpt2Generator()
-    gpt2.get_encoder()
-    gpt2.load_gpt2()
     for submission in r_autobestof.stream.submissions():
         comments = submission.comments.list()
         if len(comments) > 0:
@@ -67,11 +38,3 @@ if __name__== '__main__':
         if len(authors) < 3:
             print(submission.url)
             submission.delete()
-        else:
-            # Post to WP
-            curr_title = comment.submission.title
-            title_matches = [curr_title in existing_title for existing_title in wp_posts]
-            if not any(title_matches): print(write_wordpress_post(comment))
-            # GPT2 Titles
-            generated_text = ['Auto-generated titles for this post (Work-in-Progress)\n'] + gpt2.generate_titles(comment)
-            submission.reply('\n'.join(generated_text))
