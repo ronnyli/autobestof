@@ -39,15 +39,21 @@ def load_comments(path, **kwargs):
 
 COMMENTS_SAVE_PATH = 'comments.pkl'
 
+KEY_PHRASES = [
+    'thank you',
+    'informative',
+    'detailed'
+]
+
 if __name__== '__main__':
     comments = load_comments(path=COMMENTS_SAVE_PATH, maxsize=1000000)  # 1 million entries
     r_autobestof = reddit.subreddit('autobestof')
     while True:
         try:
             for comment in stream.stream_all_comments(reddit):
-                # stream all comments for instances of thanks
+                # stream all comments for instances of KEY_PHRASES
                 body = comment.body.lower()
-                if ('thank you' in body) \
+                if (any(key_phrase in body for key_phrase in KEY_PHRASES)) \
                     and comment.parent_id.startswith('t1_'):
                     # record their parent_ids
                     comments[comment.parent_id] = comments.get(comment.parent_id, 0) + 1
