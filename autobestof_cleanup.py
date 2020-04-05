@@ -1,5 +1,6 @@
 from reddit_auth import reddit
 from prawcore.exceptions import ResponseException, RequestException, ServerError
+import time
 
 
 if __name__== '__main__':
