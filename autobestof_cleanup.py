@@ -9,11 +9,6 @@ if __name__== '__main__':
         try:
             for submission in r_autobestof.stream.submissions():
                 comments = submission.comments.list()
-                if len(comments) > 0:
-                    comment_from_me = [c.author.name == 'sirius_li' for c in comments]
-                    if any(comment_from_me):
-                        # autobestof_cleanup already ran on this submission
-                        continue
                 sub_url = submission.url.split('/')
                 link_id = sub_url[6]
                 comment_id = sub_url[8]
